@@ -92,4 +92,36 @@ def like_unlike_post(request):
         return JsonResponse({'liked': liked, 'count': obj.like_count})
     else:
         # This is not an AJAX request
-        return JsonResponse({'error': 'Not an AJAX request'}, status=400) 
+        return JsonResponse({'error': 'Not an AJAX request'}, status=400)
+
+
+
+def update_post(request, pk):
+    obj = Post.objects.get(pk=pk)
+    
+    # Manually check for 'X-Requested-With' header
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        new_title = request.POST.get('title')
+        new_body = request.POST.get('body')
+        obj.title = new_title
+        obj.body = new_body
+        obj.save()
+        
+        return JsonResponse({
+            'title': new_title,
+            'body': new_body,
+        })
+    else:
+        return HttpResponseBadRequest('Not an AJAX request')
+
+
+def delete_post(request, pk):
+    obj = Post.objects.get(pk=pk)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        obj.delete()
+        return JsonResponse({})
+    else:
+        # Handle the case for non-AJAX requests, if necessary
+        return HttpResponseBadRequest('Not an AJAX request')          
+
