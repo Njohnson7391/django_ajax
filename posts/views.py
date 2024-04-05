@@ -64,4 +64,32 @@ def load_post_data_view(request, num_posts):
             }
             data.append(item)
 
-        return JsonResponse({'data': data[lower:upper], 'size': size})     
+        return JsonResponse({'data': data[lower:upper], 'size': size}) 
+
+
+def post_detail_data_view(request, pk):
+    obj = Post.objects.get(pk=pk)
+    data = {
+        'id': obj.id,
+        'title': obj.title,
+        'body': obj.body,
+        'author': obj.author.user.username,
+        'logged_in': request.user.username,
+    }
+    return JsonResponse({'data': data})
+
+def like_unlike_post(request):
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # This is an AJAX request
+        pk = request.POST.get('pk')
+        obj = Post.objects.get(pk=pk)
+        if request.user in obj.liked.all():
+            liked=False
+            obj.liked.remove(request.user)
+        else:
+            liked=True
+            obj.liked.add(request.user)
+        return JsonResponse({'liked': liked, 'count': obj.like_count})
+    else:
+        # This is not an AJAX request
+        return JsonResponse({'error': 'Not an AJAX request'}, status=400) 
