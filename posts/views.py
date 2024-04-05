@@ -43,7 +43,8 @@ def post_detail(request, pk):
         'form': form,
     } 
 
-    return render(request, 'posts/detail.html', context)   
+    return render(request, 'posts/detail.html', context) 
+
 
 def load_post_data_view(request, num_posts):
         visible = 3
@@ -64,8 +65,8 @@ def load_post_data_view(request, num_posts):
             }
             data.append(item)
 
-        return JsonResponse({'data': data[lower:upper], 'size': size}) 
-
+        return JsonResponse({'data': data[lower:upper], 'size': size})
+    
 
 def post_detail_data_view(request, pk):
     obj = Post.objects.get(pk=pk)
@@ -77,6 +78,8 @@ def post_detail_data_view(request, pk):
         'logged_in': request.user.username,
     }
     return JsonResponse({'data': data})
+    
+
 
 def like_unlike_post(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -92,8 +95,8 @@ def like_unlike_post(request):
         return JsonResponse({'liked': liked, 'count': obj.like_count})
     else:
         # This is not an AJAX request
-        return JsonResponse({'error': 'Not an AJAX request'}, status=400)
-
+        return JsonResponse({'error': 'Not an AJAX request'}, status=400) 
+    
 
 
 def update_post(request, pk):
@@ -123,5 +126,4 @@ def delete_post(request, pk):
         return JsonResponse({})
     else:
         # Handle the case for non-AJAX requests, if necessary
-        return HttpResponseBadRequest('Not an AJAX request')          
-
+        return HttpResponseBadRequest('Not an AJAX request')   
