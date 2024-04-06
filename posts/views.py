@@ -1,10 +1,12 @@
 from django.shortcuts import render
-from .models import Post, Photo
+from .models import Post, Photo, Comment
 from django.http import JsonResponse, HttpResponse
 from .forms import PostForm
 from profiles.models import Profile
 from .utils import action_permission
 from django.contrib.auth.decorators import login_required
+from django.shortcuts import get_object_or_404, redirect
+
 # from django.core import serializers
 # Create your views here.
 
@@ -79,6 +81,7 @@ def post_detail_data_view(request, pk):
         'title': obj.title,
         'body': obj.body,
         'author': obj.author.user.username,
+        'avatar': obj.author.avatar.url,
         'logged_in': request.user.username,
     }
     return JsonResponse({'data': data})
@@ -144,3 +147,17 @@ def image_upload_view(request):
         post = Post.objects.get(id=new_post_id)
         Photo.objects.create(image=img, post=post)
     return HttpResponse()    
+
+
+@login_required
+def add_comment(request, pk):
+    post = get_object_or_404(Post, pk=pk)
+    if request.method == 'POST':
+        content = request.POST.get('comment')
+        comment = Comment.objects.create(post=post, user=request.user, content=content)
+        
+        # Return the username and comment for the newly added comment
+        return JsonResponse({
+            'username': request.user.username,
+            'comment': content,
+        }, safe=False)
