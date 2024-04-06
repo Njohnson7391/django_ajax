@@ -53,6 +53,8 @@
         </div>
         </div>
     </div>
+    
+
 
     <!--Carousel-->
     {% if obj.get_photos %}
@@ -90,4 +92,26 @@
 
         </div>
         <div class="mt-1" id="post-box"></div>
+
+
+
+        <form id="comment-form" method="post" data-url="{% url 'posts:add_comment' obj.pk %}">
+            {% csrf_token %}
+            <textarea id="comment-input" name="comment" placeholder="Leave a comment..." required></textarea>
+            <button type="submit">Add Comment</button>
+        </form>
+        
+        <!-- Comments Section -->
+        <div id="comments-section">
+            <h3>Comments:</h3> 
+            <div class="comment">
+                <strong>{{ comment.user.username }}</strong>
+                <p>{{ comment.content }}</p>
+            </div>           
+            <p>No comments yet.</p>
+            
+        </div>
+        
+        
+
 {% endblock content %}
