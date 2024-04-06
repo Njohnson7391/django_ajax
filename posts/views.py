@@ -3,6 +3,7 @@ from .models import Post, Photo
 from django.http import JsonResponse, HttpResponse
 from .forms import PostForm
 from profiles.models import Profile
+from .utils import action_permission
 # from django.core import serializers
 # Create your views here.
 
@@ -118,12 +119,13 @@ def update_post(request, pk):
         return HttpResponseBadRequest('Not an AJAX request')
 
 
+@action_permission
 def delete_post(request, pk):
     obj = Post.objects.get(pk=pk)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         obj.delete()
-        return JsonResponse({})
+        return JsonResponse({'post has been deleted'})
     else:
         # Handle the case for non-AJAX requests, if necessary
         return HttpResponseBadRequest('Not an AJAX request')
