@@ -4,9 +4,11 @@ from django.http import JsonResponse, HttpResponse
 from .forms import PostForm
 from profiles.models import Profile
 from .utils import action_permission
+from django.contrib.auth.decorators import login_required
 # from django.core import serializers
 # Create your views here.
 
+@login_required
 def post_list_and_create(request):
     form = PostForm(request.POST or None)
     # qs = Post.objects.all()
@@ -35,6 +37,7 @@ def post_list_and_create(request):
 
     return render(request, 'posts/main.html', context)
 
+@login_required
 def post_detail(request, pk):
     obj = Post.objects.get(pk=pk)
     form = PostForm()
@@ -46,7 +49,7 @@ def post_detail(request, pk):
 
     return render(request, 'posts/detail.html', context) 
 
-
+@login_required
 def load_post_data_view(request, num_posts):
         visible = 3
         upper = num_posts
@@ -68,7 +71,7 @@ def load_post_data_view(request, num_posts):
 
         return JsonResponse({'data': data[lower:upper], 'size': size})
     
-
+@login_required
 def post_detail_data_view(request, pk):
     obj = Post.objects.get(pk=pk)
     data = {
@@ -81,7 +84,7 @@ def post_detail_data_view(request, pk):
     return JsonResponse({'data': data})
     
 
-
+@login_required
 def like_unlike_post(request):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # This is an AJAX request
@@ -99,7 +102,8 @@ def like_unlike_post(request):
         return JsonResponse({'error': 'Not an AJAX request'}, status=400) 
     
 
-
+@login_required
+@action_permission
 def update_post(request, pk):
     obj = Post.objects.get(pk=pk)
     
@@ -119,6 +123,7 @@ def update_post(request, pk):
         return HttpResponseBadRequest('Not an AJAX request')
 
 
+@login_required
 @action_permission
 def delete_post(request, pk):
     obj = Post.objects.get(pk=pk)
@@ -131,6 +136,7 @@ def delete_post(request, pk):
         return HttpResponseBadRequest('Not an AJAX request')
 
 
+@login_required
 def image_upload_view(request):
     if request.method == 'POST':
         img = request.FILES.get('file')
