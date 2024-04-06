@@ -54,6 +54,30 @@ $.ajax({
         postBox.appendChild(titleEl)
         postBox.appendChild(bodyEl)
 
+                // New code to create an avatar image and username element
+        const userBox = document.createElement('div')
+        userBox.className = 'user-box d-flex align-items-center mb-3'  // Bootstrap classes for flexbox and alignment
+
+        const avatarEl = document.createElement('img')
+        avatarEl.src = data.avatar  // The avatar URL from your AJAX response
+        avatarEl.alt = 'User avatar'  // Alternative text for the avatar image
+        avatarEl.className = 'rounded-circle mr-2'  // Bootstrap class for rounded images and margin
+        avatarEl.style.width = '40px'  // Adjust width as needed
+        avatarEl.style.height = '40px'  // Adjust height as needed
+        avatarEl.style.objectFit = 'cover'  // Ensure the image covers the area
+
+        const usernameEl = document.createElement('span')
+        usernameEl.textContent = data.author  // The username from your AJAX response
+        usernameEl.className = 'username'  // Class for potential additional styling
+
+        // Append the avatar and username to the userBox
+        userBox.appendChild(avatarEl)
+        userBox.appendChild(usernameEl)
+
+        // Append the userBox to the postBox
+        postBox.appendChild(userBox)
+
+
         titleInput.value = data.title
         bodyInput.value = data.body
 
@@ -83,6 +107,7 @@ updateForm.addEventListener('submit', e=>{
             handleAlerts('success', 'post has been updated')
             title.textContent = response.title
             body.textContent = response.body
+            usernameEl.textContent = `Posted by: ${data.author}`
         },
         error: function(error){
             console.log(error)
