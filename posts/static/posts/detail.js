@@ -18,6 +18,9 @@ const spinnerBox = document.getElementById('spinner-box')
 const titleInput = document.getElementById('id_title')
 const bodyInput = document.getElementById('id_body')
 
+const commentForm = document.getElementById('comment-form')
+const commentsSection = document.getElementById('comments-section')
+
 const csrf = document.getElementsByName('csrfmiddlewaretoken')
 
 
@@ -136,3 +139,36 @@ deleteForm.addEventListener('submit', e=>{
         }
     })
 })
+
+commentForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const commentInput = document.getElementById('comment-input');
+    const commentText = commentInput.value;
+    const url = commentForm.getAttribute('data-url');  // Get the URL from the data attribute
+    const csrfToken = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+
+    $.ajax({
+        type: 'POST',
+        url: url,
+        data: {
+            'csrfmiddlewaretoken': csrfToken,
+            'comment': commentText,
+        },
+        success: function(response) {
+            commentInput.value = '';  // Clear the input field on success
+
+            // Create and append the new comment element
+            const newComment = document.createElement('div');
+            newComment.classList.add('comment');
+            newComment.innerHTML = `
+                <strong>${response.username}</strong>
+                <p>${response.comment}</p>
+            `;
+            commentsSection.appendChild(newComment);
+        },
+        error: function(error) {
+            console.error(error);
+        }
+    });
+});
